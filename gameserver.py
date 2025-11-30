@@ -12,12 +12,16 @@ clocks = [Clock(0,50), Clock(1, 50)]  # Add more clocks as needed
 playerScores = {}
 connectedClients = set()
 
+@app.get("/")
+async def root():
+    return {"message": "This is the Clock Mayhem Gameserver!"}
+
 @app.post("/login")
 async def login(playerName):
     if playeName not in playerScores:
         playerScores[playerName] = 0
     return {"message": f"Player {playerName} logged in"}
-    
+
 @app.websocket("/ws")
 async def websocketEndpoint(websocket: WebSocket):
     await websocket.accept()
@@ -34,7 +38,7 @@ async def websocketEndpoint(websocket: WebSocket):
     except Exception:
         # On any other error, just drop the connection
         connectedClients.discard(websocket)
-        
+
 async def gameLoop():
     """Update positions and broadcast state ~4 times per second."""
     while True:
